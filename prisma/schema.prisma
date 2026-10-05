@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  KASIR
+}
+
+enum Kategori {
+  MAKANAN_BERAT
+  MINUMAN
+}
+
+enum MetodeBayar {
+  TUNAI
+  TRANSFER
+  QRIS
+}
+
+enum StatusBayar {
+  PENDING
+  LUNAS
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  nama      String
+  username  String      @unique
+  password  String
+  role      Role
+  createdAt DateTime    @default(now())
+  transaksi Transaksi[]
+}
+
+model Product {
+  id       Int                @id @default(autoincrement())
+  kode     String?            @unique
+  nama     String
+  harga    Int
+  stok     Int                @default(0)
+  kategori Kategori
+  gambar   String?
+  detail   DetailTransaksi[]
+}
+
+model Member {
+  id         Int         @id @default(autoincrement())
+  kodeMember String      @unique
+  nama       String
+  telp       String      @unique
+  email      String?
+  alamat     String?     @db.Text
+  createdAt  DateTime    @default(now())
+  transaksi  Transaksi[]
+}
+
+model Transaksi {
+  id            Int               @id @default(autoincrement())
+  kode          String            @unique
+  tanggal       DateTime          @default(now())
+  userId        Int
+  user          User              @relation(fields: [userId], references: [id])
+  memberId      Int?
+  member        Member?           @relation(fields: [memberId], references: [id])
+  subtotal      Int
+  diskon        Int               @default(0)
+  total         Int
+  metodeBayar   MetodeBayar
+  statusBayar   StatusBayar       @default(LUNAS)
+  uangDiterima  Int?
+  kembalian     Int?
+  detail        DetailTransaksi[]
+}
+
+model DetailTransaksi {
+  id          Int       @id @default(autoincrement())
+  transaksiId Int
+  transaksi   Transaksi @relation(fields: [transaksiId], references: [id])
+  productId   Int
+  product     Product   @relation(fields: [productId], references: [id])
+  qty         Int
+  harga       Int
+  subtotal    Int
+}
