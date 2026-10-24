@@ -12,10 +12,14 @@ export default async function AdminLayout({
   if (!session) redirect("/login");
   if (session.role !== "ADMIN") redirect("/kasir");
 
-  return (
-    <div className="min-h-screen bg-[#FFFBDC] text-[#4A2A12] md:flex">
-      <Sidebar namaToko={NAMA_TOKO} namaUser={session.nama} />
-      <main className="min-w-0 flex-1 p-6 pt-16 md:pt-6">{children}</main>
-    </div>
-  );
+ 
+return (
+  <div className="min-h-screen bg-[#FFFCF5] text-[#4A2A12] md:flex">
+    <Sidebar namaToko={NAMA_TOKO} namaUser={session.nama} />
+
+    <main className="min-w-0 flex-1 px-4 pb-8 pt-20 sm:px-6 md:px-6 md:pt-6 xl:px-8">
+      {children}
+    </main>
+  </div>
+);
 }
